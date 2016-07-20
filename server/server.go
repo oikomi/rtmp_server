@@ -1,27 +1,29 @@
 package server
 
 import (
-	"net"
+	"github.com/golang/glog"
 	"github.com/oikomi/rtmp_server/client"
+	"net"
 )
 
 type Server struct {
-	socket net.Listener
+	socket  net.Listener
 	clients chan *client.Client
-	errs chan error
+	errs    chan error
 }
 
-func New(bind string) (*Server, error) {
+func New(bind string) (server *Server, err error) {
 	socket, err := net.Listen("tcp", bind)
 	if err != nil {
-	return nil, err
+		glog.Error(err)
+		return
 	}
-
-	return &Server{
-			socket:  socket,
-			clients: make(chan *client.Client),
-			errs:    make(chan error),
-		}, nil
+	server = &Server{
+		socket:  socket,
+		clients: make(chan *client.Client),
+		errs:    make(chan error),
+	}
+	return
 }
 
 func (s *Server) Close() (err error) {
@@ -37,7 +39,6 @@ func (s *Server) Errs() <-chan error {
 	return s.errs
 }
 
-
 func (s *Server) Accept() {
 	for {
 		conn, err := s.socket.Accept()
@@ -48,4 +49,3 @@ func (s *Server) Accept() {
 		s.clients <- client.New(conn)
 	}
 }
-

@@ -2,9 +2,9 @@ package main
 
 import (
 	"flag"
-	"github.com/oikomi/rtmp_server/server"
-	"fmt"
 	"github.com/golang/glog"
+	"github.com/oikomi/rtmp_server/conf"
+	"github.com/oikomi/rtmp_server/server"
 )
 
 func init() {
@@ -14,20 +14,22 @@ func init() {
 
 func main() {
 	flag.Parse()
-	s, err := server.New(":1935")
-	if err != nil {
-		return
+	if err := conf.Init(); err != nil {
+		glog.Error(err)
+		panic(err)
 	}
-
+	s, err := server.New(conf.Conf.Server.Addr)
+	if err != nil {
+		panic(err)
+	}
 	go s.Accept()
 	defer s.Close()
-
 	for {
 		select {
 		case c := <-s.Clients():
 			glog.Info(c)
 		case err := <-s.Errs():
-			fmt.Println(err)
+			glog.Error(err)
 		}
 	}
 }
