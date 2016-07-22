@@ -3,7 +3,7 @@ package chunk
 import (
 	"io"
 
-	"github.com/WatchBeam/rtmp/spec"
+	"github.com/oikomi/rtmp_server/spec"
 )
 
 type ExtendedTimestamp struct {
@@ -24,6 +24,5 @@ func (t *ExtendedTimestamp) Write(w io.Writer) error {
 	if _, err := spec.PutUint32(t.Delta, w); err != nil {
 		return err
 	}
-
 	return nil
 }

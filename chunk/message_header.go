@@ -5,7 +5,7 @@ import (
 	"errors"
 	"io"
 
-	"github.com/WatchBeam/rtmp/spec"
+	"github.com/oikomi/rtmp_server/spec"
 )
 
 var (
@@ -43,7 +43,6 @@ func (m *MessageHeader) Read(r io.Reader) error {
 		if err != nil {
 			return err
 		}
-
 		m.Timestamp = spec.Uint32(buf[:3])
 		m.TimestampDelta = true
 		m.Length = spec.Uint32(buf[3:6])
@@ -53,7 +52,6 @@ func (m *MessageHeader) Read(r io.Reader) error {
 		if err != nil {
 			return err
 		}
-
 		m.Timestamp = spec.Uint32(buf)
 		m.TimestampDelta = true
 	case 3:
@@ -67,7 +65,6 @@ func (m *MessageHeader) Read(r io.Reader) error {
 
 func (m *MessageHeader) Write(w io.Writer) error {
 	buf := new(bytes.Buffer)
-
 	switch m.FormatId {
 	case 0:
 		spec.PutUint24(m.Timestamp, buf)
@@ -81,10 +78,8 @@ func (m *MessageHeader) Write(w io.Writer) error {
 	case 2:
 		spec.PutUint24(m.Timestamp, buf)
 	}
-
 	if _, err := w.Write(buf.Bytes()); err != nil {
 		return err
 	}
-
 	return nil
 }

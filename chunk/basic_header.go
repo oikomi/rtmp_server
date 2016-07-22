@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"io"
 
-	"github.com/WatchBeam/rtmp/spec"
+	"github.com/oikomi/rtmp_server/spec"
 )
 
 type BasicHeader struct {
@@ -17,34 +17,28 @@ func (h *BasicHeader) Read(r io.Reader) error {
 	if err != nil {
 		return err
 	}
-
 	h.FormatId = b >> 6
-
 	if b&0x3f == 0x3f {
 		tail, err := spec.ReadBytes(r, int(2))
 		if err != nil {
 			return err
 		}
-
 		h.StreamId = spec.Uint32(tail) + 64
 	} else if b&0x3f == 0 {
 		tail, err := spec.ReadBytes(r, int(1))
 		if err != nil {
 			return err
 		}
-
 		h.StreamId = spec.Uint32(tail) + 64
 	} else {
 		h.StreamId = spec.Uint32([]byte{b & 0x3f})
 	}
-
 	return nil
 }
 
 func (h *BasicHeader) Write(w io.Writer) error {
 	buf := make([]byte, 1)
 	buf[0] = h.FormatId << 6
-
 	switch {
 	case h.StreamId < 64:
 		buf[0] |= (byte(h.StreamId) & 0x3f)
@@ -57,14 +51,11 @@ func (h *BasicHeader) Write(w io.Writer) error {
 
 			return err
 		}
-
 		buf[0] |= 63
 		buf = append(buf, tmp.Bytes()...)
 	}
-
 	if _, err := w.Write(buf); err != nil {
 		return err
 	}
-
 	return nil
 }
