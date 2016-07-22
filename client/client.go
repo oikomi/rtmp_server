@@ -22,8 +22,5 @@ func (c *Client) Handshake() error {
 	}).Handshake(); err != nil {
 		return err
 	}
-
-	go c.chunks.Recv()
-
 	return nil
 }

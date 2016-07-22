@@ -27,7 +27,7 @@ func main() {
 	for {
 		select {
 		case c := <-s.Clients():
-			glog.Info(c)
+			c.Handshake()
 		case err := <-s.Errs():
 			glog.Error(err)
 		}
