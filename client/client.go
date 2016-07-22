@@ -1,8 +1,8 @@
 package client
 
 import (
-	"io"
 	"github.com/oikomi/rtmp_server/handshake"
+	"io"
 )
 
 type Client struct {

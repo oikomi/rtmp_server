@@ -7,4 +7,3 @@ type Sequence interface {
 	WriteTo(w io.Writer) error
 	Next() Sequence
 }
-
